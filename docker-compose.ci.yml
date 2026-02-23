@@ -1,0 +1,23 @@
+services:
+  newman:
+    image: postman/newman:alpine
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./tests:/etc/newman:ro
+    command:
+      - run
+      - /etc/newman/postman_collection.json
+      - --environment
+      - /etc/newman/postman_environment.json
+      - --global-var
+      - "baseUrl=http://backend:3000/api/v1"
+      - --global-var
+      - "tokenUser=user_777"
+      - --global-var
+      - "tokenModerator=moderator_1"
+      - --global-var
+      - "tokenOtherUser=user_999"
+      - --reporters
+      - cli

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mental Maps — Demo UI (LW5)</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;max-width:980px;margin:24px auto;padding:0 12px}
+    h1{margin:0 0 8px}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .card{border:1px solid #ddd;border-radius:10px;padding:12px;margin:12px 0}
+    input,select,button{padding:8px;border-radius:8px;border:1px solid #ccc}
+    button{cursor:pointer}
+    pre{background:#f7f7f7;border-radius:10px;padding:12px;overflow:auto}
+    .muted{color:#666;font-size:14px}
+  </style>
+</head>
+<body>
+  <h1>Mental Maps — Demo UI (LabWork5)</h1>
+  <div class="muted">UI контейнер (Nginx) проксирует <code>/api/v1</code> на backend-контейнер.</div>
+
+  <div class="card">
+    <h3>1) Проверка API</h3>
+    <button onclick="health()">GET /api/v1/health</button>
+    <pre id="healthOut"></pre>
+  </div>
+
+  <div class="card">
+    <h3>2) Токен</h3>
+    <div class="row">
+      <input id="token" placeholder="например: user_777" style="min-width:260px" />
+      <button onclick="saveToken()">Сохранить</button>
+      <button onclick="fillUser()">user_777</button>
+      <button onclick="fillMod()">moderator_1</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>3) Карты</h3>
+    <div class="row">
+      <input id="mapTitle" placeholder="Название карты" style="min-width:260px" />
+      <select id="mapVisibility"><option value="private">private</option><option value="public">public</option></select>
+      <button onclick="createMap()">POST /maps</button>
+      <button onclick="listMaps()">GET /maps</button>
+    </div>
+    <pre id="mapsOut"></pre>
+  </div>
+
+  <div class="card">
+    <h3>4) Элементы</h3>
+    <div class="row">
+      <input id="mapId" placeholder="mapId из ответа" style="min-width:260px" />
+      <button onclick="listElements()">GET /maps/{mapId}/elements</button>
+    </div>
+    <div class="row">
+      <input id="elType" value="point" />
+      <input id="elX" value="1.1" />
+      <input id="elY" value="2.2" />
+      <input id="elContent" value="demo" style="min-width:200px" />
+      <button onclick="addElement()">POST /maps/{mapId}/elements</button>
+    </div>
+    <pre id="elementsOut"></pre>
+  </div>
+
+<script>
+function getToken(){ return localStorage.getItem("token") || ""; }
+function headers(){
+  const t = getToken();
+  const h = {"Content-Type":"application/json"};
+  if (t) h["Authorization"] = "Bearer " + t;
+  return h;
+}
+function show(id, obj){ document.getElementById(id).textContent = JSON.stringify(obj, null, 2); }
+
+async function health(){
+  const r = await fetch("/api/v1/health");
+  show("healthOut", await r.json());
+}
+function saveToken(){ localStorage.setItem("token", document.getElementById("token").value.trim()); alert("ok"); }
+function fillUser(){ document.getElementById("token").value="user_777"; }
+function fillMod(){ document.getElementById("token").value="moderator_1"; }
+
+async function createMap(){
+  const body = { title: document.getElementById("mapTitle").value.trim(), description:"", visibility: document.getElementById("mapVisibility").value };
+  const r = await fetch("/api/v1/maps", {method:"POST", headers: headers(), body: JSON.stringify(body)});
+  show("mapsOut", {status:r.status, body: await r.json().catch(()=>({}))});
+}
+async function listMaps(){
+  const r = await fetch("/api/v1/maps", {headers: headers()});
+  show("mapsOut", {status:r.status, body: await r.json().catch(()=>({}))});
+}
+async function listElements(){
+  const mapId = document.getElementById("mapId").value.trim();
+  const r = await fetch(`/api/v1/maps/${mapId}/elements`, {headers: headers()});
+  show("elementsOut", {status:r.status, body: await r.json().catch(()=>({}))});
+}
+async function addElement(){
+  const mapId = document.getElementById("mapId").value.trim();
+  const body = { type: document.getElementById("elType").value.trim(),
+                 x: Number(document.getElementById("elX").value),
+                 y: Number(document.getElementById("elY").value),
+                 content: document.getElementById("elContent").value.trim(),
+                 style: {color:"#FFAA00", size:12}};
+  const r = await fetch(`/api/v1/maps/${mapId}/elements`, {method:"POST", headers: headers(), body: JSON.stringify(body)});
+  show("elementsOut", {status:r.status, body: await r.json().catch(()=>({}))});
+}
+</script>
+</body>
+</html>

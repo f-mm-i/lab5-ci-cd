@@ -1,0 +1,17 @@
+{
+  "name": "mental-maps-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend API for Mental Maps (LabWork5 Docker microservices)",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0",
+    "uuid": "^9.0.1"
+  }
+}

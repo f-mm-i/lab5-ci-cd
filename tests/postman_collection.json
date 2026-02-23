@@ -1,0 +1,276 @@
+{
+  "info": {
+    "name": "Mental Maps API - LW5 Integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST /maps - OK",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/maps",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "maps"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"title\": \"LW5 map\", \"description\": \"\", \"visibility\": \"private\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test('Has mapId', () => pm.expect(j.mapId).to.be.ok);",
+              "pm.environment.set('mapId', j.mapId);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /maps - OK",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/maps",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "maps"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('items is array', () => pm.expect(j.items).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /maps/:mapId - OK",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/maps/{{mapId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "maps",
+            "{{mapId}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('mapId matches', () => pm.expect(j.mapId).to.eql(pm.environment.get('mapId')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /maps/:mapId/elements - OK",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/maps/{{mapId}}/elements",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "maps",
+            "{{mapId}}",
+            "elements"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"type\": \"point\", \"x\": 1.1, \"y\": 2.2, \"content\": \"demo\", \"style\": {\"color\": \"#FFAA00\", \"size\": 12}}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test('Has elementId', () => pm.expect(j.elementId).to.be.ok);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /maps/:mapId/elements - OK",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/maps/{{mapId}}/elements",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "maps",
+            "{{mapId}}",
+            "elements"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('items is array', () => pm.expect(j.items).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "POST /reports - OK",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenUser}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reports",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reports"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\"mapId\": \"{{mapId}}\", \"reason\": \"spam\", \"comment\": \"demo\"}"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const j = pm.response.json();",
+              "pm.test('status is new', () => pm.expect(j.status).to.eql('new'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /reports - OK (moderator)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{tokenModerator}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reports",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reports"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', () => pm.response.to.have.status(200));",
+              "const j = pm.response.json();",
+              "pm.test('items is array', () => pm.expect(j.items).to.be.an('array'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
